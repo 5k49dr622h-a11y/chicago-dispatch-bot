@@ -1,0 +1,12 @@
+{
+  "vcs": {
+    "police": "1529101881173868596",
+    "fire": "1529102019959193741",
+    "ems": "1529102271126966332"
+  },
+  "layout": {
+    "title": "ACTIVE DISPATCH — CHICAGO",
+    "footer": "Dispatched by {user}"
+  },
+  "channelId": "1529101526784671825"
+}

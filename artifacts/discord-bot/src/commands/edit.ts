@@ -10,6 +10,15 @@ import {
 } from 'discord.js';
 import { getGuildConfig, updateGuildConfig } from '../lib/config.js';
 
+/** Accepts a bare snowflake ID or a full Discord channel URL and returns just the ID. */
+function extractId(raw: string): string {
+  const trimmed = raw.trim();
+  // https://discord.com/channels/GUILD_ID/CHANNEL_ID  →  last segment
+  const match = trimmed.match(/(\d{17,20})(?:\/(\d{17,20}))?$/);
+  if (match) return match[2] ?? match[1];
+  return trimmed;
+}
+
 export const editCommand = {
   async handleCommand(interaction: ChatInputCommandInteraction) {
     const guildId = interaction.guildId;
@@ -128,7 +137,7 @@ export const editCommand = {
     const id = interaction.customId;
 
     if (id === 'edit-channel') {
-      const channelId = interaction.fields.getTextInputValue('channel_id').trim();
+      const channelId = extractId(interaction.fields.getTextInputValue('channel_id'));
       updateGuildConfig(guildId, { channelId });
       await interaction.reply({
         content: `✅ Dispatch channel set to <#${channelId}>`,
@@ -136,10 +145,10 @@ export const editCommand = {
       });
 
     } else if (id === 'edit-vcs') {
-      const police = interaction.fields.getTextInputValue('vc_police').trim() || undefined;
-      const fire = interaction.fields.getTextInputValue('vc_fire').trim() || undefined;
-      const ems = interaction.fields.getTextInputValue('vc_ems').trim() || undefined;
-      const def = interaction.fields.getTextInputValue('vc_default').trim() || undefined;
+      const police = interaction.fields.getTextInputValue('vc_police').trim() ? extractId(interaction.fields.getTextInputValue('vc_police')) : undefined;
+      const fire = interaction.fields.getTextInputValue('vc_fire').trim() ? extractId(interaction.fields.getTextInputValue('vc_fire')) : undefined;
+      const ems = interaction.fields.getTextInputValue('vc_ems').trim() ? extractId(interaction.fields.getTextInputValue('vc_ems')) : undefined;
+      const def = interaction.fields.getTextInputValue('vc_default').trim() ? extractId(interaction.fields.getTextInputValue('vc_default')) : undefined;
 
       updateGuildConfig(guildId, { vcs: { police, fire, ems, default: def } });
 
